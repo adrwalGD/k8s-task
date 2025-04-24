@@ -13,5 +13,6 @@ COPY --from=builder /go/bin/frontend /src/server
 COPY ./templates ./templates
 COPY ./static ./static
 
+USER 1000:1000
 EXPOSE 8080
 ENTRYPOINT ["/src/server"]
