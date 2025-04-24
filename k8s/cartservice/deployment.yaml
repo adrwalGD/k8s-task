@@ -13,6 +13,8 @@ spec:
       labels:
         app: cartservice
     spec:
+      imagePullSecrets:
+        - name: acr-auth
       serviceAccountName: cartservice
       terminationGracePeriodSeconds: 5
       securityContext:
@@ -29,7 +31,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: us-central1-docker.pkg.dev/google-samples/microservices-demo/cartservice:v0.10.2
+        image: adrwalacr.azurecr.io/cartservice:latest
         ports:
         - containerPort: 7070
         env:

@@ -13,6 +13,8 @@ spec:
       labels:
         app: emailservice
     spec:
+      imagePullSecrets:
+        - name: acr-auth
       serviceAccountName: emailservice
       terminationGracePeriodSeconds: 5
       securityContext:
@@ -29,7 +31,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: us-central1-docker.pkg.dev/google-samples/microservices-demo/emailservice:v0.10.2
+        image: adrwalacr.azurecr.io/emailservice:latest
         ports:
         - containerPort: 8080
         env:

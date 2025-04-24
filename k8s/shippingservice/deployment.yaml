@@ -13,6 +13,8 @@ spec:
       labels:
         app: shippingservice
     spec:
+      imagePullSecrets:
+        - name: acr-auth
       serviceAccountName: shippingservice
       securityContext:
         fsGroup: 1000
@@ -28,7 +30,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: us-central1-docker.pkg.dev/google-samples/microservices-demo/shippingservice:v0.10.2
+        image: adrwalacr.azurecr.io/shippingservice:latest
         ports:
         - containerPort: 50051
         env:

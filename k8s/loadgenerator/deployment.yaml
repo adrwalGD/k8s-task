@@ -16,6 +16,8 @@ spec:
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
+      imagePullSecrets:
+        - name: acr-auth
       serviceAccountName: loadgenerator
       terminationGracePeriodSeconds: 5
       restartPolicy: Always
@@ -64,7 +66,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: us-central1-docker.pkg.dev/google-samples/microservices-demo/loadgenerator:v0.10.2
+        image: adrwalacr.azurecr.io/loadgenerator:latest
         env:
         - name: FRONTEND_ADDR
           value: "frontend:80"

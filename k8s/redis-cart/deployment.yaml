@@ -13,6 +13,8 @@ spec:
       labels:
         app: redis-cart
     spec:
+      imagePullSecrets:
+        - name: acr-auth
       securityContext:
         fsGroup: 1000
         runAsGroup: 1000

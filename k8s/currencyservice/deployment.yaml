@@ -13,6 +13,8 @@ spec:
       labels:
         app: currencyservice
     spec:
+      imagePullSecrets:
+        - name: acr-auth
       serviceAccountName: currencyservice
       terminationGracePeriodSeconds: 5
       securityContext:
@@ -29,7 +31,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: us-central1-docker.pkg.dev/google-samples/microservices-demo/currencyservice:v0.10.2
+        image: adrwalacr.azurecr.io/currencyservice:latest
         ports:
         - name: grpc
           containerPort: 7000
