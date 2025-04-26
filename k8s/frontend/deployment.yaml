@@ -32,7 +32,7 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: adrwalacr.azurecr.io/frontend:latest
+          image: adrwalacr.azurecr.io/frontend:my
           ports:
           - containerPort: 8080
           readinessProbe:

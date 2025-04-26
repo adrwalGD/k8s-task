@@ -1,0 +1,20 @@
+FROM eclipse-temurin:21.0.5_11-jdk AS builder
+
+WORKDIR /app
+
+COPY ["build.gradle", "gradlew", "./"]
+COPY gradle gradle
+RUN chmod +x gradlew
+RUN ./gradlew downloadRepos
+
+COPY . .
+RUN chmod +x gradlew
+RUN ./gradlew installDist
+
+FROM gcr.io/distroless/java21-debian12
+
+WORKDIR /app
+COPY --from=builder /app .
+
+USER 1000:1000
+ENTRYPOINT ["java", "-cp", "/app/build/install/hipstershop/lib/*", "hipstershop.AdService"]

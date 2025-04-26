@@ -5,6 +5,7 @@ metadata:
   labels:
     app: adservice
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: adservice
@@ -31,7 +32,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: adrwalacr.azurecr.io/adservice:latest
+        image: adrwalacr.azurecr.io/adservice:my
         ports:
         - containerPort: 9555
         env:
