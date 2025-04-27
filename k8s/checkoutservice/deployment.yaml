@@ -5,6 +5,7 @@ metadata:
   labels:
     app: checkoutservice
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: checkoutservice
@@ -30,7 +31,7 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: adrwalacr.azurecr.io/checkoutservice:latest
+          image: adrwalacr.azurecr.io/checkoutservice:my
           ports:
           - containerPort: 5050
           readinessProbe:
