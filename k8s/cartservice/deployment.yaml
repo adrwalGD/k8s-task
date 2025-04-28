@@ -5,6 +5,7 @@ metadata:
   labels:
     app: cartservice
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: cartservice
@@ -31,7 +32,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: adrwalacr.azurecr.io/cartservice:latest
+        image: adrwalacr.azurecr.io/cartservice:my
         ports:
         - containerPort: 7070
         env:
