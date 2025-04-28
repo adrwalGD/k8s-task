@@ -5,6 +5,7 @@ metadata:
   labels:
     app: recommendationservice
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: recommendationservice
@@ -31,7 +32,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: adrwalacr.azurecr.io/recommendationservice:latest
+        image: adrwalacr.azurecr.io/recommendationservice:my
         ports:
         - containerPort: 8080
         readinessProbe:
