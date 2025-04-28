@@ -8,6 +8,10 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = ">= 2.10.0"
     }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.9"
+    }
   }
 }
 
@@ -21,6 +25,15 @@ provider "kubernetes" {
   client_certificate     = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.client_certificate)
   client_key             = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.client_key)
   cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.cluster_ca_certificate)
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = azurerm_kubernetes_cluster.aks.kube_config.0.host
+    client_certificate     = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.client_certificate)
+    client_key             = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.client_key)
+    cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.cluster_ca_certificate)
+  }
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -90,6 +103,23 @@ resource "kubernetes_secret" "acr_secret" {
   type = "kubernetes.io/dockerconfigjson"
 }
 
+resource "helm_release" "nginx_ingress" {
+  name       = "ingress-nginx"
+  repository = "https://kubernetes.github.io/ingress-nginx"
+  chart      = "ingress-nginx"
+  version    = "4.10.1"
+  namespace  = "ingress-nginx"
+  create_namespace = true
+
+  set {
+    name  = "controller.service.annotations.\"service\\.beta\\.kubernetes\\.io/azure-load-balancer-health-probe-request-path\""
+    value = "/healthz"
+  }
+
+  depends_on = [
+    azurerm_kubernetes_cluster.aks
+  ]
+}
 
 
 
