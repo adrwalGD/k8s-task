@@ -1,0 +1,18 @@
+FROM golang:1.23.4-alpine AS builder
+
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+
+RUN CGO_ENABLED=0 go build -o /productcatalogservice .
+
+FROM scratch
+
+WORKDIR /src
+COPY --from=builder /productcatalogservice ./server
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY products.json .
+
+USER 1000:1000
+ENTRYPOINT ["/src/server"]

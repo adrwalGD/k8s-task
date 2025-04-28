@@ -5,6 +5,7 @@ metadata:
   labels:
     app: productcatalogservice
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: productcatalogservice
@@ -31,7 +32,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: adrwalacr.azurecr.io/productcatalogservice:latest
+        image: adrwalacr.azurecr.io/productcatalogservice:my
         ports:
         - containerPort: 3550
         env:
