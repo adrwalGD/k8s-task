@@ -5,6 +5,7 @@ metadata:
   labels:
     app: shippingservice
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: shippingservice
@@ -30,7 +31,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: adrwalacr.azurecr.io/shippingservice:latest
+        image: adrwalacr.azurecr.io/shippingservice:my
         ports:
         - containerPort: 50051
         env:
