@@ -5,6 +5,7 @@ metadata:
   labels:
     app: currencyservice
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: currencyservice
@@ -31,7 +32,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: adrwalacr.azurecr.io/currencyservice:latest
+        image: adrwalacr.azurecr.io/currencyservice:my
         ports:
         - name: grpc
           containerPort: 7000
