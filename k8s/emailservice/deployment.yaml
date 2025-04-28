@@ -32,7 +32,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: adrwalacr.azurecr.io/emailservice:latest
+        image: adrwalacr.azurecr.io/emailservice:my
         ports:
         - containerPort: 8080
         env:
