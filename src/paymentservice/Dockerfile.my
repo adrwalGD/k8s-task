@@ -1,0 +1,29 @@
+# FROM node:20.18.1-alpine AS builder
+FROM node:20.18.1 AS builder
+
+# RUN apk add --update --no-cache \
+#     python3 \
+#     make \
+#     g++
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm install --only=production
+
+FROM gcr.io/distroless/nodejs20-debian12:nonroot
+
+# RUN apk add --no-cache nodejs
+
+WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+
+COPY . .
+
+# EXPOSE 50051
+
+# ENTRYPOINT [ "node", "index.js" ]
+USER 1000:1000
+CMD ["index.js"]

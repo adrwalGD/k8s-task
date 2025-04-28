@@ -5,6 +5,7 @@ metadata:
   labels:
     app: paymentservice
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: paymentservice
@@ -31,7 +32,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: adrwalacr.azurecr.io/paymentservice:latest
+        image: adrwalacr.azurecr.io/paymentservice:my
         ports:
         - containerPort: 50051
         env:
