@@ -35,9 +35,9 @@ spec:
         image: adrwalacr.azurecr.io/cartservice:my
         ports:
         - containerPort: 7070
-        env:
-        - name: REDIS_ADDR
-          value: "redis-cart:6379"
+        # env:
+        # - name: REDIS_ADDR
+        #   value: "redis-cart:6379"
         resources:
           requests:
             cpu: 200m
