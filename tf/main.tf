@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "4.26.0"
+      version = "4.27.0"
     }
      kubernetes = {
       source  = "hashicorp/kubernetes"
@@ -57,6 +57,12 @@ resource "azurerm_kubernetes_cluster" "aks" {
   dns_prefix          = "adrwal-aks"
 
   sku_tier = "Free"
+
+  network_profile {
+    network_plugin = "azure"
+    network_policy = "azure"
+    network_plugin_mode = "overlay"
+  }
 
   default_node_pool {
     name       = "default"
