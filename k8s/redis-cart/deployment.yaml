@@ -41,6 +41,12 @@ spec:
           periodSeconds: 5
           tcpSocket:
             port: 6379
+        env:
+          - name: REDIS_PASSWORD
+            value: "RedisPassword123"
+        args:
+          - "--requirepass"
+          - "RedisPassword123"
         volumeMounts:
         - mountPath: /data
           name: redis-data

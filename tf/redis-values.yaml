@@ -1,0 +1,91 @@
+# values.yaml for a Redis Helm chart (e.g., bitnami/redis)
+# Replicating settings from the provided Deployment manifest
+
+# Architecture: Standalone mode (equivalent to replicas: 1 in a simple Deployment)
+architecture: standalone
+
+# Image Configuration
+# image:
+#   registry: docker.io # Or your specific registry if not Docker Hub
+#   repository: redis
+#   tag: alpine
+#   pullSecrets:
+#     - name: acr-auth # Matches imagePullSecrets
+
+# Authentication Configuration
+auth:
+  enabled: true
+  # NOTE: Storing plain passwords in values.yaml is NOT recommended for production.
+  # Consider using --set auth.password=... , using existing secrets (auth.existingSecret),
+  # or letting the chart generate a password during installation.
+  existingSecret: redis-password # Matches the secret name in the Deployment
+  # password: "RedisPassword123" # Matches REDIS_PASSWORD env var
+
+# Security Context for the Pod
+# Note: runAsGroup and runAsNonRoot might be implicitly handled by runAsUser in some charts
+podSecurityContext:
+  enabled: true
+  fsGroup: 1000
+  runAsUser: 1000
+  # Some charts might have separate keys like runAsGroup: 1000, runAsNonRoot: true
+
+# Security Context for the Redis Container
+# Some charts might inherit this from podSecurityContext or have separate master/replica sections
+containerSecurityContext:
+  enabled: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]
+  privileged: false
+  readOnlyRootFilesystem: true
+  # runAsUser/runAsGroup might be specified here too or inherited
+
+# Probes Configuration
+master: # Settings often grouped under 'master' for standalone/master nodes
+  # Liveness Probe Configuration
+  livenessProbe:
+    enabled: true
+    periodSeconds: 5
+    # Other probe settings (initialDelaySeconds, timeoutSeconds, failureThreshold)
+    # usually have chart defaults, adjust if needed. TCP socket on port 6379 is typically default.
+
+  # Readiness Probe Configuration
+  readinessProbe:
+    enabled: true
+    periodSeconds: 5
+    # Other probe settings (initialDelaySeconds, timeoutSeconds, failureThreshold)
+    # usually have chart defaults, adjust if needed. TCP socket on port 6379 is typically default.
+
+  # Resource Limits and Requests
+  resources:
+    limits:
+      memory: 256Mi
+      cpu: 125m
+    requests:
+      cpu: 70m
+      memory: 200Mi
+
+  # Persistence Configuration
+  # enabled: false maps to using emptyDir: {}
+  persistence:
+    enabled: false
+    # When false, the chart typically uses an emptyDir volume for /data path automatically.
+    # No need to specify volumeMounts or volumes directly here, chart handles it.
+
+# Service Configuration (Optional but usually needed)
+# The chart typically creates a Service. You might want to ensure it targets the correct port.
+service:
+  ports:
+    redis: 6379 # Matches containerPort: 6379
+  # type: ClusterIP # Default is usually ClusterIP
+
+# Labels (Optional)
+# If you need the specific 'app: redis-cart' label beyond what Helm adds automatically.
+# commonLabels:
+#   app: redis-cart
+# podLabels:
+#  app: redis-cart
+
+# Replica count (For standalone, this section might be ignored or set to 0)
+# replica:
+#   replicaCount: 0

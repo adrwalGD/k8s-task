@@ -33,11 +33,18 @@ spec:
           privileged: false
           readOnlyRootFilesystem: true
         image: adrwalacr.azurecr.io/cartservice:my
+        imagePullPolicy: Always
         ports:
         - containerPort: 7070
         env:
         - name: REDIS_ADDR
           value: "redis-cart:6379"
+        - name: REDIS_PASSWORD
+          # value: "RedisPassword123"
+          valueFrom:
+            secretKeyRef:
+              name: redis-password
+              key: redis-password
         resources:
           requests:
             cpu: 200m
