@@ -19,4 +19,4 @@ spec:
         - podSelector: {}
           namespaceSelector:
             matchLabels:
-              name: default
+              kubernetes.io/metadata.name: default
