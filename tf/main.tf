@@ -4,7 +4,7 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "4.27.0"
     }
-     kubernetes = {
+    kubernetes = {
       source  = "hashicorp/kubernetes"
       version = ">= 2.10.0"
     }
@@ -59,8 +59,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
   sku_tier = "Free"
 
   network_profile {
-    network_plugin = "azure"
-    network_policy = "azure"
+    network_plugin      = "azure"
+    network_policy      = "azure"
     network_plugin_mode = "overlay"
   }
 
@@ -76,7 +76,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
 }
 
 resource "kubernetes_secret" "acr_secret" {
-  # Ensure the secret is created only after AKS and ACR are ready
   depends_on = [
     azurerm_kubernetes_cluster.aks,
     azurerm_container_registry.acr
@@ -87,34 +86,28 @@ resource "kubernetes_secret" "acr_secret" {
     namespace = "default"
   }
 
-  # IMPORTANT: The data key must be ".dockerconfigjson"
-  # The value is the JSON structure Docker expects, as a string.
-  # Terraform automatically base64 encodes the *value* part of the data map.
   data = {
     ".dockerconfigjson" = jsonencode({
       auths = {
         "${azurerm_container_registry.acr.login_server}" = {
           username = azurerm_container_registry.acr.admin_username
-          # Mark the password as sensitive to prevent it from showing in plain text logs/outputs
           password = sensitive(azurerm_container_registry.acr.admin_password)
-          email    = "no-reply@example.com" # Placeholder email, value doesn't usually matter
-          # The 'auth' field is the base64 encoding of "username:password"
-          auth = base64encode("${azurerm_container_registry.acr.admin_username}:${azurerm_container_registry.acr.admin_password}")
+          email    = "no-reply@example.com"
+          auth     = base64encode("${azurerm_container_registry.acr.admin_username}:${azurerm_container_registry.acr.admin_password}")
         }
       }
     })
   }
 
-  # Secret type must be "kubernetes.io/dockerconfigjson"
   type = "kubernetes.io/dockerconfigjson"
 }
 
 resource "helm_release" "nginx_ingress" {
-  name       = "ingress-nginx"
-  repository = "https://kubernetes.github.io/ingress-nginx"
-  chart      = "ingress-nginx"
-  version    = "4.10.1"
-  namespace  = "ingress-nginx"
+  name             = "ingress-nginx"
+  repository       = "https://kubernetes.github.io/ingress-nginx"
+  chart            = "ingress-nginx"
+  version          = "4.10.1"
+  namespace        = "ingress-nginx"
   create_namespace = true
 
   set {
