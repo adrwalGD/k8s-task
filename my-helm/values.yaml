@@ -1,8 +1,3 @@
-# Default values for microservices-demo.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-# Global values
 global:
   imagePullPolicy: IfNotPresent
   namespace: default
@@ -27,7 +22,6 @@ ingress:
     name: frontend
     port: 80
 
-# Service-specific values
 adservice:
   enabled: true
   name: adservice
