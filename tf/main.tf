@@ -148,101 +148,11 @@ resource "helm_release" "redis_cart" {
 
   values = [
     file("redis-values.yaml")
-    # <<-YAML
-    # # Match labels from your original Deployment/Service
-    # commonLabels:
-    #   app: redis-cart
-
-    # # Use a single replica (standalone mode)
-    # architecture: standalone
-    # master:
-    #   replicaCount: 1
-
-    #   # Configure Pod Security Context (matches spec.template.spec.securityContext)
-    #   podSecurityContext:
-    #     enabled: true
-    #     fsGroup: 1000
-    #     runAsUser: 1000
-    #     # Bitnami chart usually handles runAsGroup and runAsNonRoot automatically
-    #     # when runAsUser is set to non-root (like 1000)
-
-    #   # Configure Container Security Context (matches spec.template.spec.containers[0].securityContext)
-    #   containerSecurityContext:
-    #     enabled: true
-    #     allowPrivilegeEscalation: false
-    #     runAsUser: 1000 # Run container as specific user too
-    #     runAsNonRoot: true
-    #     privileged: false
-    #     readOnlyRootFilesystem: true
-    #     capabilities:
-    #       drop: ["ALL"]
-
-    #   # Configure resource requests and limits
-    #   resources:
-    #     limits:
-    #       memory: 256Mi
-    #       cpu: 125m
-    #     requests:
-    #       cpu: 70m
-    #       memory: 200Mi
-
-    #   # Configure probes (matching your settings)
-    #   probes:
-    #     livenessProbe:
-    #       enabled: true
-    #       initialDelaySeconds: 5 # Default is often higher, adjust if needed
-    #       periodSeconds: 5
-    #       timeoutSeconds: 1 # Default
-    #       successThreshold: 1 # Default
-    #       failureThreshold: 5 # Default
-    #       tcpSocket:
-    #         port: 6379
-    #     readinessProbe:
-    #       enabled: true
-    #       initialDelaySeconds: 5 # Default is often higher, adjust if needed
-    #       periodSeconds: 5
-    #       timeoutSeconds: 1 # Default
-    #       successThreshold: 1 # Default
-    #       failureThreshold: 5 # Default
-    #       tcpSocket:
-    #         port: 6379
-
-    # # Configure image details
-    # image:
-    #   registry: docker.io # Default Docker Hub
-    #   repository: redis
-    #   tag: alpine
-    #   # Reference the imagePullSecret you created
-    #   pullSecrets:
-    #    - ${kubernetes_secret.acr_secret.metadata[0].name}
-
-    # # Configure persistence (disable PVC, use emptyDir like original YAML)
-    # persistence:
-    #   enabled: false # This is key to match your emptyDir volume
-    #   # volumeMounts and volumes related to data are handled internally by the chart
-    #   # when persistence is enabled/disabled. Disabling it should achieve the emptyDir behavior.
-
-    # # Service configuration (matches your Service YAML)
-    # service:
-    #   type: ClusterIP # Default, but explicit
-    #   port: 6379
-    #   # The service name will be derived from the release name (`redis-cart-master` in standalone)
-    #   # The service selector is handled automatically by Helm based on the labels it applies.
-    #   # You can override service name if needed:
-    #   nameOverride: redis-cart # If you want the service DNS exactly as 'redis-cart'
-
-    # # Disable Sentinel as we're running standalone
-    # sentinel:
-    #   enabled: false
-    # YAML
   ]
 
-  # Ensure the ACR secret exists before trying to pull the image
   depends_on = [
     azurerm_kubernetes_cluster.aks,
     kubernetes_secret.acr_secret,
-    # Optional, but good practice: ensure nginx is settled if redis depends on it somehow,
-    # although unlikely in this specific case. More importantly, ensures cluster is ready.
     helm_release.nginx_ingress
   ]
 }
