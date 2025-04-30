@@ -228,3 +228,42 @@ networkPolicies:
           namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: default
+
+redis:
+  architecture: standalone
+  auth:
+    enabled: true
+    existingSecret: redis-password
+
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1000
+    runAsUser: 1000
+
+  containerSecurityContext:
+    enabled: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: ["ALL"]
+    privileged: false
+    readOnlyRootFilesystem: true
+
+  master:
+    livenessProbe:
+      enabled: true
+      periodSeconds: 5
+    readinessProbe:
+      enabled: true
+      periodSeconds: 5
+    resources:
+      limits:
+        memory: 256Mi
+        cpu: 125m
+      requests:
+        cpu: 70m
+        memory: 200Mi
+    persistence:
+      enabled: false
+  service:
+    ports:
+      redis: 6379

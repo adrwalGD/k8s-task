@@ -32,7 +32,7 @@ spec:
             - containerPort: 7070
           env:
             - name: REDIS_ADDR
-              value: "redis-cart-master:6379"
+              value: "{{ .Release.Name }}-redis-master:6379"
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -54,4 +54,4 @@ spec:
             periodSeconds: 10
             grpc:
               port: 7070
-{{- end }} 
+{{- end }}
