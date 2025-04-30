@@ -1,0 +1,55 @@
+{{- if .Values.recommendationservice.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.recommendationservice.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.recommendationservice.name }}
+spec:
+  replicas: {{ .Values.recommendationservice.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.recommendationservice.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.recommendationservice.name }}
+    spec:
+      serviceAccountName: {{ .Values.recommendationservice.name }}
+      securityContext:
+        {{- toYaml .Values.global.podSecurityContext | nindent 8 }}
+        {{- with .Values.recommendationservice.podSecurityContext }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      imagePullSecrets:
+        - name: {{ .Values.global.imagePullSecretName }}
+      containers:
+        - name: {{ .Values.recommendationservice.name }}
+          image: "{{ .Values.recommendationservice.image.repository }}:{{ .Values.recommendationservice.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+            - name: PRODUCT_CATALOG_SERVICE_ADDR
+              value: "productcatalogservice:3550"
+            - name: DISABLE_PROFILER
+              value: "1"
+          resources:
+            {{- toYaml .Values.recommendationservice.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.global.containerSecurityContext | nindent 12 }}
+            {{- with .Values.recommendationservice.containerSecurityContext }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          readinessProbe:
+            periodSeconds: 5
+            grpc:
+              port: 8080
+          livenessProbe:
+            periodSeconds: 5
+            grpc:
+              port: 8080
+{{- end }} 

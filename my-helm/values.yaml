@@ -1,0 +1,236 @@
+# Default values for microservices-demo.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global values
+global:
+  imagePullPolicy: IfNotPresent
+  namespace: default
+  imagePullSecretName: acr-auth
+  podSecurityContext:
+    fsGroup: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    runAsUser: 1000
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    privileged: false
+    readOnlyRootFilesystem: true
+
+ingress:
+  name: frontend-ingress
+  enabled: true
+  service:
+    name: frontend
+    port: 80
+
+# Service-specific values
+adservice:
+  enabled: true
+  name: adservice
+  image:
+    repository: adrwalacr.azurecr.io/adservice
+    tag: my
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 200m
+      memory: 180Mi
+  podSecurityContext: {}
+  containerSecurityContext: {}
+
+cartservice:
+  enabled: true
+  name: cartservice
+  image:
+    repository: adrwalacr.azurecr.io/cartservice
+    tag: my
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 200m
+      memory: 180Mi
+  podSecurityContext: {}
+  containerSecurityContext: {}
+
+checkoutservice:
+  enabled: true
+  name: checkoutservice
+  image:
+    repository: adrwalacr.azurecr.io/checkoutservice
+    tag: my
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 200m
+      memory: 180Mi
+  podSecurityContext: {}
+  containerSecurityContext: {}
+
+currencyservice:
+  enabled: true
+  name: currencyservice
+  image:
+    repository: adrwalacr.azurecr.io/currencyservice
+    tag: my
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 200m
+      memory: 180Mi
+  podSecurityContext: {}
+  containerSecurityContext: {}
+
+emailservice:
+  enabled: true
+  name: emailservice
+  image:
+    repository: adrwalacr.azurecr.io/emailservice
+    tag: my
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 200m
+      memory: 180Mi
+  podSecurityContext: {}
+  containerSecurityContext: {}
+
+frontend:
+  enabled: true
+  name: frontend
+  image:
+    repository: adrwalacr.azurecr.io/frontend
+    tag: my
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 200m
+      memory: 180Mi
+  podSecurityContext: {}
+  containerSecurityContext: {}
+
+loadgenerator:
+  enabled: true
+  name: loadgenerator
+  image:
+    repository: loadgenerator
+    tag: latest
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 200m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 64Mi
+
+paymentservice:
+  enabled: true
+  name: paymentservice
+  image:
+    repository: adrwalacr.azurecr.io/paymentservice
+    tag: my
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 200m
+      memory: 180Mi
+  podSecurityContext: {}
+  containerSecurityContext: {}
+
+productcatalogservice:
+  enabled: true
+  name: productcatalogservice
+  image:
+    repository: adrwalacr.azurecr.io/productcatalogservice
+    tag: my
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 200m
+      memory: 180Mi
+  podSecurityContext: {}
+  containerSecurityContext: {}
+
+recommendationservice:
+  enabled: true
+  name: recommendationservice
+  image:
+    repository: adrwalacr.azurecr.io/recommendationservice
+    tag: my
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 200m
+      memory: 180Mi
+  podSecurityContext: {}
+  containerSecurityContext: {}
+
+shippingservice:
+  enabled: true
+  name: shippingservice
+  image:
+    repository: adrwalacr.azurecr.io/shippingservice
+    tag: my
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 200m
+      memory: 180Mi
+  podSecurityContext: {}
+  containerSecurityContext: {}
+
+networkPolicies:
+- name: deny-cross-namespace-traffic
+  namespace: default
+  enabled: true
+  spec:
+    podSelector: {}
+    policyTypes:
+      - Ingress
+    ingress:
+      - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: ingress-nginx
+      - from:
+        - podSelector: {}
+          namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: default

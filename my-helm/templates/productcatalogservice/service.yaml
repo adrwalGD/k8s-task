@@ -1,0 +1,18 @@
+{{- if .Values.productcatalogservice.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.productcatalogservice.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.productcatalogservice.name }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Values.productcatalogservice.name }}
+  ports:
+    - port: 3550
+      targetPort: 3550
+      protocol: TCP
+      name: grpc
+{{- end }} 

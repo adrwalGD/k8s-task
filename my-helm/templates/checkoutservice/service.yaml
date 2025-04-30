@@ -1,0 +1,18 @@
+{{- if .Values.checkoutservice.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.checkoutservice.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.checkoutservice.name }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Values.checkoutservice.name }}
+  ports:
+    - port: 5050
+      targetPort: 5050
+      protocol: TCP
+      name: http
+{{- end }} 

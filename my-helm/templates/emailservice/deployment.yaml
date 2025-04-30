@@ -1,0 +1,53 @@
+{{- if .Values.emailservice.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.emailservice.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.emailservice.name }}
+spec:
+  replicas: {{ .Values.emailservice.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.emailservice.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.emailservice.name }}
+    spec:
+      serviceAccountName: {{ .Values.emailservice.name }}
+      securityContext:
+        {{- toYaml .Values.global.podSecurityContext | nindent 8 }}
+        {{- with .Values.emailservice.podSecurityContext }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      imagePullSecrets:
+        - name: {{ .Values.global.imagePullSecretName }}
+      containers:
+        - name: {{ .Values.emailservice.name }}
+          image: "{{ .Values.emailservice.image.repository }}:{{ .Values.emailservice.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+            - name: DISABLE_PROFILER
+              value: "1"
+          resources:
+            {{- toYaml .Values.emailservice.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.global.containerSecurityContext | nindent 12 }}
+            {{- with .Values.emailservice.containerSecurityContext }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          readinessProbe:
+            periodSeconds: 5
+            grpc:
+              port: 8080
+          livenessProbe:
+            periodSeconds: 5
+            grpc:
+              port: 8080
+{{- end }} 

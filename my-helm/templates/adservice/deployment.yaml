@@ -1,0 +1,55 @@
+{{- if .Values.adservice.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.adservice.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.adservice.name }}
+spec:
+  replicas: {{ .Values.adservice.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.adservice.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.adservice.name }}
+    spec:
+      serviceAccountName: {{ .Values.adservice.name }}
+      securityContext:
+        {{- toYaml .Values.global.podSecurityContext | nindent 8 }}
+        {{- with .Values.adservice.podSecurityContext }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      imagePullSecrets:
+        - name: {{ .Values.global.imagePullSecretName }}
+      containers:
+        - name: {{ .Values.adservice.name }}
+          image: "{{ .Values.adservice.image.repository }}:{{ .Values.adservice.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: 9555
+          env:
+            - name: PORT
+              value: "9555"
+            - name: DISABLE_PROFILER
+              value: "1"
+          resources:
+            {{- toYaml .Values.adservice.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.global.containerSecurityContext | nindent 12 }}
+            {{- with .Values.adservice.containerSecurityContext }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          readinessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            grpc:
+              port: 9555
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            grpc:
+              port: 9555
+{{- end }}

@@ -1,0 +1,18 @@
+{{- if .Values.recommendationservice.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.recommendationservice.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.recommendationservice.name }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Values.recommendationservice.name }}
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http
+{{- end }} 

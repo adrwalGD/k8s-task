@@ -1,0 +1,18 @@
+{{- if .Values.currencyservice.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.currencyservice.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.currencyservice.name }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Values.currencyservice.name }}
+  ports:
+    - port: 7000
+      targetPort: 7000
+      protocol: TCP
+      name: http
+{{- end }} 

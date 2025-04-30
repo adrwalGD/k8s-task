@@ -1,0 +1,18 @@
+{{- if .Values.emailservice.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.emailservice.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.emailservice.name }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Values.emailservice.name }}
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http
+{{- end }} 

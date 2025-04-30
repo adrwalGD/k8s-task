@@ -1,0 +1,51 @@
+{{- if .Values.productcatalogservice.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.productcatalogservice.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.productcatalogservice.name }}
+spec:
+  replicas: {{ .Values.productcatalogservice.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.productcatalogservice.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.productcatalogservice.name }}
+    spec:
+      serviceAccountName: {{ .Values.productcatalogservice.name }}
+      securityContext:
+        {{- toYaml .Values.global.podSecurityContext | nindent 8 }}
+        {{- with .Values.productcatalogservice.podSecurityContext }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      imagePullSecrets:
+        - name: {{ .Values.global.imagePullSecretName }}
+      containers:
+        - name: {{ .Values.productcatalogservice.name }}
+          image: "{{ .Values.productcatalogservice.image.repository }}:{{ .Values.productcatalogservice.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: 3550
+          env:
+            - name: PORT
+              value: "3550"
+            - name: DISABLE_PROFILER
+              value: "1"
+          resources:
+            {{- toYaml .Values.productcatalogservice.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.global.containerSecurityContext | nindent 12 }}
+            {{- with .Values.productcatalogservice.containerSecurityContext }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          readinessProbe:
+            grpc:
+              port: 3550
+          livenessProbe:
+            grpc:
+              port: 3550
+{{- end }} 

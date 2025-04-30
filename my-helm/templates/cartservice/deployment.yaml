@@ -1,0 +1,57 @@
+{{- if .Values.cartservice.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.cartservice.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.cartservice.name }}
+spec:
+  replicas: {{ .Values.cartservice.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.cartservice.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.cartservice.name }}
+    spec:
+      serviceAccountName: {{ .Values.cartservice.name }}
+      securityContext:
+        {{- toYaml .Values.global.podSecurityContext | nindent 8 }}
+        {{- with .Values.cartservice.podSecurityContext }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      imagePullSecrets:
+        - name: {{ .Values.global.imagePullSecretName }}
+      containers:
+        - name: {{ .Values.cartservice.name }}
+          image: "{{ .Values.cartservice.image.repository }}:{{ .Values.cartservice.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: 7070
+          env:
+            - name: REDIS_ADDR
+              value: "redis-cart-master:6379"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-password
+                  key: redis-password
+          resources:
+            {{- toYaml .Values.cartservice.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.global.containerSecurityContext | nindent 12 }}
+            {{- with .Values.cartservice.containerSecurityContext }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          readinessProbe:
+            initialDelaySeconds: 15
+            grpc:
+              port: 7070
+          livenessProbe:
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            grpc:
+              port: 7070
+{{- end }} 

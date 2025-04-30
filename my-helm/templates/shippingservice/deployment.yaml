@@ -1,0 +1,52 @@
+{{- if .Values.shippingservice.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.shippingservice.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.shippingservice.name }}
+spec:
+  replicas: {{ .Values.shippingservice.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.shippingservice.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.shippingservice.name }}
+    spec:
+      serviceAccountName: {{ .Values.shippingservice.name }}
+      securityContext:
+        {{- toYaml .Values.global.podSecurityContext | nindent 8 }}
+        {{- with .Values.shippingservice.podSecurityContext }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      imagePullSecrets:
+        - name: {{ .Values.global.imagePullSecretName }}
+      containers:
+        - name: {{ .Values.shippingservice.name }}
+          image: "{{ .Values.shippingservice.image.repository }}:{{ .Values.shippingservice.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: 50051
+          env:
+            - name: PORT
+              value: "50051"
+            - name: DISABLE_PROFILER
+              value: "1"
+          resources:
+            {{- toYaml .Values.shippingservice.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.global.containerSecurityContext | nindent 12 }}
+            {{- with .Values.shippingservice.containerSecurityContext }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          readinessProbe:
+            periodSeconds: 5
+            grpc:
+              port: 50051
+          livenessProbe:
+            grpc:
+              port: 50051
+{{- end }} 
