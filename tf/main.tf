@@ -133,33 +133,6 @@ resource "helm_release" "nginx_ingress" {
   ]
 }
 
-resource "helm_release" "redis_cart" {
-  name       = "redis-cart"
-  repository = "https://charts.bitnami.com/bitnami"
-  chart      = "redis"
-  version    = "18.6.3"
-  namespace  = "default"
-  create_namespace = false
-
-  set {
-    name  = "auth.existingSecret"
-    value = kubernetes_secret.redis_pass.metadata[0].name
-  }
-
-  values = [
-    file("redis-values.yaml")
-  ]
-
-  depends_on = [
-    azurerm_kubernetes_cluster.aks,
-    kubernetes_secret.acr_secret,
-    helm_release.nginx_ingress
-  ]
-}
-
-
-
-
 output "resource_group_name" {
   value = azurerm_resource_group.rg.name
 }
