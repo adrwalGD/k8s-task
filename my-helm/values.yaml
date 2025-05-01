@@ -127,9 +127,16 @@ frontend:
 loadgenerator:
   enabled: true
   name: loadgenerator
+  env:
+    - name: LOCUST_HOST
+      value: "http://frontend:80"
+    - name: LOCUST_USERS
+      value: "10"
+    - name: LOCUST_SPAWN_RATE
+      value: "1"
   image:
-    repository: loadgenerator
-    tag: latest
+    repository: adrwalacr.azurecr.io/loadgenerator
+    tag: my
   replicaCount: 1
   resources:
     limits:

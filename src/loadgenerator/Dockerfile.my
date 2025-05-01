@@ -1,0 +1,21 @@
+FROM debian:12-slim AS build-venv
+RUN apt-get update && \
+    apt-get install --no-install-suggests --no-install-recommends --yes python3-venv libpython3-dev g++ && \
+    python3 -m venv /venv && \
+    /venv/bin/pip install --upgrade pip setuptools wheel
+
+COPY requirements.txt /requirements.txt
+RUN /venv/bin/pip install --disable-pip-version-check -r /requirements.txt
+
+
+FROM gcr.io/distroless/python3-debian12:nonroot
+COPY --from=build-venv /venv /venv
+COPY . /app
+WORKDIR /app
+
+ENV LOCUST_USERS=10
+ENV LOCUST_SPAWN_RATE=1
+ENV LOCUST_HOST=http://frontend:80
+
+USER 1000:1000
+ENTRYPOINT ["/venv/bin/locust", "--headless"]

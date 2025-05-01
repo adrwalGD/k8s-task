@@ -66,14 +66,14 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: adrwalacr.azurecr.io/loadgenerator:latest
+        image: adrwalacr.azurecr.io/loadgenerator:my
         env:
-        - name: FRONTEND_ADDR
-          value: "frontend:80"
-        - name: USERS
-          value: "10"
-        - name: RATE
-          value: "1"
+          - name: LOCUST_HOST
+            value: "http://frontend:80"
+          - name: LOCUST_USERS
+            value: "10"
+          - name: LOCUST_SPAWN_RATE
+            value: "1"
         resources:
           requests:
             cpu: 300m
