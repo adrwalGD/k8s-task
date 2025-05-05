@@ -136,9 +136,9 @@ loadgenerator:
     - name: LOCUST_HOST
       value: "http://frontend:80"
     - name: LOCUST_USERS
-      value: "20000"
+      value: "10"
     - name: LOCUST_SPAWN_RATE
-      value: "100"
+      value: "1"
   image:
     repository: adrwalacr.azurecr.io/loadgenerator
     tag: my
