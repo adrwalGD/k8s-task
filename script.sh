@@ -116,3 +116,26 @@ if [ "$1" == "checkov" ]; then
         popd > /dev/null
     done
 fi
+
+if [ "$1" == "trivy" ]; then
+    IMAGES=(
+        "adrwalacr.azurecr.io/adservice:my"
+        "adrwalacr.azurecr.io/cartservice:my"
+        "adrwalacr.azurecr.io/checkoutservice:my"
+        "adrwalacr.azurecr.io/currencyservice:my"
+        "adrwalacr.azurecr.io/emailservice:my"
+        "adrwalacr.azurecr.io/frontend:my"
+        "adrwalacr.azurecr.io/loadgenerator:my"
+        "adrwalacr.azurecr.io/paymentservice:my"
+        "adrwalacr.azurecr.io/productcatalogservice:my"
+        "adrwalacr.azurecr.io/recommendationservice:my"
+        "adrwalacr.azurecr.io/shippingservice:my"
+        "adrwalacr.azurecr.io/shoppingassistantservice:my"
+    )
+    for image in "${IMAGES[@]}"; do
+        echo "============================================="
+        echo "Scanning image: $image"
+        trivy image --severity HIGH,CRITICAL --ignore-unfixed --quiet "$image"
+        echo "============================================="
+    done
+fi
