@@ -39,38 +39,30 @@ if [ "$1" == "build" ]; then
         echo "--- Processing folder: $folder_name ---"
         echo "Full path resolved to: $folder_path"
 
-        # Check if the directory exists
         if [ ! -d "$folder_path" ]; then
             echo "Error: Directory '$folder_path' not found. Skipping."
-            continue # Move to the next folder in the array
+            continue
         fi
 
         echo "Changing directory to $folder_path"
-        pushd "$folder_path" > /dev/null # '>' redirects stdout, '/dev/null' discards it
+        pushd "$folder_path" > /dev/null
 
         if [ ! -f "Dockerfile" ]; then
             echo "Error: 'Dockerfile' not found in '$folder_path'. Skipping."
-            # Navigate back out before continuing
             popd > /dev/null
-            continue # Move to the next folder in the array
+            continue
         fi
 
-        # Construct the full Docker image name including registry and tag
-        # Uses the folder name as the image name part
         full_image_name="${REGISTRY}/$(basename "$folder_name"):${TAG}"
 
         echo "Building image: $full_image_name"
-        # Build the Docker image. '.' refers to the current directory as the build context.
-        # The '-t' flag tags the image.
         docker build -t "$full_image_name" .
 
         echo "Pushing image: $full_image_name"
-        # Push the tagged image to the configured registry
         docker push "$full_image_name"
 
         echo "Successfully built and pushed $full_image_name"
 
-        # Return to the previous directory using popd
         popd > /dev/null
 
     done
